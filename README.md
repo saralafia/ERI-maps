@@ -11,16 +11,36 @@ To prepare the documents for topic modeling, we followed standard natural langua
 We experimented with three unsupervised approaches to develop coherent topic models. The results from each approach are reported as follows:
 
 ### Latent Dirichlet Allocation (LDA)
-This implementation uses MALLET. A random seed (1) ensures reproducibility of model. Iterations through topics 2 - 100 determined the model with the best coherence score. The model with **47 topics** yielded the highest coherence score (0.5277) with the second and third highest scores from the models with 50 and 68 topics respectively. The hyperparameter for optimize interval was set to default after suboptimal results setting it to 10. 
+We experimented with two LDA implementations, summarized below. In each, the random seed or random state was set to 1 to ensure model reproducibility. Iterations through topics (2 - 100) determined a number of topics that yielded the best coherence score for each model. A pyLDAvis interface for each (lda-mallet-47.html, lda-mallet-20.html, lda-gensim-47.html, lda-gensim-14.html) supports intepretation by showing salient terms for each of the topics.
 
-The following summarize the results of the LDA 47 topic model: most representative document for each topic (LDA-47-rep-doc.csv); topic distribution across documents (LDA-47-top-dist.csv); and dominant topic for each document (LDA-47-top-doc.csv). The pyLDAvis (lda.html) supports model intepretation by showing salient terms from each of the topics in the model. 
+| Implementation | Topics| Coherence Score (0 - 1) |
+|----------|-------------:|------:|
+| MALLET LDA | 47 | 0.5277 |
+| MALLET LDA | 20 | 0.5256 |
+| Gensim LDA |    47   | 0.4499 | 
+| Gensim LDA |    14   | 0.4802 | 
 
-### Non-negative Matrix Factorization (NMF)
-This implementation uses scikit-learn. 
+Overall, the MALLET LDA implementation produced higher quality topics. For the MALLET LDA topic model with the highest coherence score, we found: the most representative document for each topic (LDA-47-rep-doc.csv); the topic distribution across documents (LDA-47-top-dist.csv); and the dominant topic for each document (LDA-47-top-doc.csv). 
+
+[wordclouds]
 
 ### hierarchical LDA (hLDA)
-This implementation uses MALLET. 
+We experimented with an hLDA implementation, summarized below. In each,  
+
+| Implementation | Topics| Coherence Score (0 - 1) |
+|----------|-------------:|------:|
+| Gensim hLDA |      |  | 
+| Gensim hLDA |      |  |  
+
+### Non-negative Matrix Factorization (NMF)
+
+
+### hierarchical Dirichlet process (HDP)
+
 
 ## 4 - Spatialization and Visualization
-###pyLDAVis of LDA
+###LDA t-SNE
 
+###NMF t-SNE
+
+###hLDA hierarchical network
