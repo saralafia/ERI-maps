@@ -1,7 +1,19 @@
-# Discovering Earth Research Topics
+# Mapping Earth Research Topics
+[abstracting, summarizing...]
+
+[mapping is an art; it is not free of empirical evidence or criteria; it is well-informed selection informed by expert opinions...]
+
+[geographic space view/aerial image as a metaphor - topical worlds]
+
 This project determines major research topics at UC Santa Barbara's Earth Research Institute ([ERI](https://www.eri.ucsb.edu/)) and visualizes their evolution over the last decade. Data analyzed include ERI's funded projects and publications from **240** principal investigators (PIs) active from **2009 - 2019**. ERI maintains records of active PIs and funded projects. Published articles by active PIs were harvested from the [Dimensions API](https://www.dimensions.ai/). The list of published articles obtained were hand-curated by ERI administrative staff. Only funded projects or publications with titles and abstracts were considered, resulting in a corpus of 3,108 publications and 662 funded projects (**3,770** research documents). 
 
 ## Data
+[in the end, these are not really suitable for approximating a suitable range of topics]
+
+[so we settle on the measure of coherence, which is comparable across models]
+
+[a high number in the 20s]
+
 We report summary statistics for ERI's publications, funded projects, and PIs with the goal of determining a suitable range of topics for modeling and evaluating topic model coherence. This summary also highlights the multidisciplinarity of ERI's research portfolio. 
 
 **Fields of research (for publications):**
@@ -11,6 +23,10 @@ The distribution of publications (shown in green) by year of publication is show
 <div style="text-align:center"><img src="figures/pubYears.png" alt="top_20_publishers" width="350"/></div>
 
 Publications are classified hierarchically into [fields of research (FOR)](https://dimensions.freshdesk.com/support/solutions/articles/23000018826-what-is-the-background-behind-the-fields-of-research-for-classification-system-) representing 22 divisions and 157 groups. Divisions represent a broad subject area or research discipline and groups are detailed subsets of divisions. The publication database ([Dimensions.ai](https://dimensions.ai)) assigns FOR codes at the level of the individual article, rather than by journal classification. Publications authored by ERI PIs represent **19 divisions** (summarized below) and **112 groups** of academic research.
+
+[X cover % of ERI's work, falling into X divisions]
+
+[importance of placing ERI's work into a broader context; deans, admins are concerned with how ERI is positioned within a university/school/funding subdivision - outside positioning that FOR facilitates, e.g. comparison w/MIT's Earth Science division]
 
 <div style="text-align:center"><img src="figures/FOR_divisions.png" alt="FOR_divisions" width="600"/></div>
 
@@ -32,6 +48,14 @@ ERI projects have been funded $191,235,929 over the past decade by **145 agencie
 
 Over the last decade, ERI's 240 PIs have been affiliated with **24 academic departments**. Many PIs are solely affiliated with ERI, while others are secondarily affiliated (as shown below). Some affiliations have also changed (e.g. Crustal Studies has morphed into other academic departments).
 
+[primary or secondary affiliations]
+
+[may be the weakest proxy for topic numbers, having more to do with disciplines; may suggest some methodologies that surface, rather than a subject perspective]
+
+[we expect an overlap in technical approaches to show]
+
+[observation - no statistics department, although most techniques are statistical]
+
 <div style="text-align:center"><img src="figures/PI_depts.png" alt="project_funding" width="500"/></div>
 
 ## Preprocessing
@@ -46,7 +70,36 @@ To prepare the documents for topic modeling, we followed a standard natural lang
 2. tokenization and conversion to lowercase, construction of n-gram models to preserve contiguous sequences of words (bigrams, trigrams); 
 3. and lemmatization to resolve words to their base forms. 
 
-From the processed documents, we created a dictionary (of word ids, word frequencies) and a corpus (a bag of words) to use in topic modeling.
+From the processed documents, we created a dictionary (of word ids, word frequencies) and a corpus (a bag of words) to use in topic modeling. The resulting terms are shown below as a word cloud. 
+
+<div style="text-align:center"><img src="figures/wordcloud-cleaned-corpus.png" alt="project_funding" width="600"/></div>
+
+**TF-IDF Document-Terms:** 
+
+[this can be moved up as part of an explanation for the difference between LDA and NMF]
+
+The top 20 distinct terms from the corpus with their tf-idf scores are shown below.
+
+1. data (72.55)
+2. water (68.59)
+3. species (67.42)
+4. climate (64.61)
+5. model (59.18)
+6. soil (54.52)
+7. snow (48.71)
+8. change (47.67)
+9. high (44.43)
+10. surface (44.21)
+11. based (42.98)
+12. models (41.48)
+13. ocean (38.30)
+14. carbon (38.21)
+15. spatial (37.74)
+16. land (37.37)
+17. results (36.83)
+18. global (36.81)
+19. california (36.53)
+20. environmental (36.39)
 
 ## Topic Modeling
 We experimented with several unsupervised approaches to develop coherent topic models. The most important parameter of each model is its number of topics. In addition to model coherence scores or log-likelihoods, we also considered the previously reported heuristics to determine a range of topics to test. 
@@ -60,9 +113,11 @@ We experimented with several implementations of the LDA algorithm (Blei et al., 
 
 We determined that the [MALLET](http://mallet.cs.umass.edu./) implementation of LDA (McCallum, 2002) produced higher quality topics than the Gensim and Scikit-learn implementations. We deployed pyLDAvis interfaces for the most coherent models at several levels of thematic granularity and generated: 
 
-1. the most representative document for each topic; 
+1. the most representative document(s) for each topic; 
 2. the topic distribution across documents; 
 3. and the dominant topic for each document. 
+
+[relax 1 and 3 to show multiple documents]
 
 **LDA Coherence:**
 
@@ -112,31 +167,6 @@ We also experimented with an NMF implementation (Arora, 2013) for comparison. NM
 
 We generated the NMF models using [Scikit-learn](https://medium.com/mlreview/topic-modeling-with-scikit-learn-e80d33668730). We implemented NMF with an initialization procedure called Nonnegative Double Singular Value Decomposition (nndsvd), which is best for sparse data. We fit [model parameters](https://github.com/derekgreene/topic-model-tutorial/) using tf-idf (term frequency–inverse document frequency) features. 
 
-**TF-IDF Document-Terms:** 
-
-The top 20 distinct terms from the corpus with their tf-idf scores are shown below.
-
-1. data (72.55)
-2. water (68.59)
-3. species (67.42)
-4. climate (64.61)
-5. model (59.18)
-6. soil (54.52)
-7. snow (48.71)
-8. change (47.67)
-9. high (44.43)
-10. surface (44.21)
-11. based (42.98)
-12. models (41.48)
-13. ocean (38.30)
-14. carbon (38.21)
-15. spatial (37.74)
-16. land (37.37)
-17. results (36.83)
-18. global (36.81)
-19. california (36.53)
-20. environmental (36.39)
-
 **NMF Coherence:**
 
 <img src="figures/NMF-coherence.png" alt="LDA-coherence" width="500"/>
@@ -178,14 +208,15 @@ Topic| Keywords |
 
 ### Hierarchical LDA (hLDA)
 
+An extension of LDA for learning topic hierarchies is hLDA (Griffiths et al., 2004). This approach estimates the structure of a hierarchy and partitions documents nonparametrically. We use an hLDA implementation in [Tomotopy](https://bab2min.github.io/tomotopy). The following summarizes our findings at several hierarchical levels. 
 
-(Griffiths et al., 2004)
-
-| Implementation | Topics| Coherence Score (0 - 1) |
+| Level | Topics| Perplexity Score |
 |----------|-------------:|------:|
-| MALLET hLDA |      |  | 
+| 2|  272   |  3185.40 | 
+| 3|  424    | 3921.60 | 
+| 4|  560     | 3622.80 | 
 
-### Other topic models and coherence scores:
+### Other topic models:
 
 * Latent Semantic Indexing (LSI): 5 topics (0.4277)
 * Hierarchical Dirichlet Process (HDP): 150 topics (0.4993); topics are determined through posterior inference (hdp-gensim-150.html)
