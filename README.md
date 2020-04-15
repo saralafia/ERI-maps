@@ -75,7 +75,11 @@ The LDA algorithm (Blei et al., 2003) is a generative probabilistic model. In ea
 
 **LDA Coherence:**
 
+The shape of the curve below suggests a relative maximum coherence score for our LDA model of 20 topics, with another at around 40 topics, after which coherence decreases (an unexpected result). Models with fewer than 10 topics have a low coherence score. 
+
 <img src="figures/LDA-coherence-V2.png" alt="LDA-coherence" width="500"/>
+
+The most coherent LDA model has 43 topics (as shown below). For purposes of summarization and comparison with NMF (in the following section), we report the findings from our 20 topic model.
 
 Number of Topics| Coherence Score (0 - 1) |
 |-------------:|------:|
@@ -85,7 +89,7 @@ Number of Topics| Coherence Score (0 - 1) |
 | 24 | 0.5330 |[lda-mallet-24.html](https://github.com/saralafia/Study-3-master/blob/master/pyLDAvis/lda-mallet-24.html)
 | **20** | **0.5014** |[lda-mallet-20.html](https://github.com/saralafia/Study-3-master/blob/master/pyLDAvis/lda-mallet-20.html)
 
-**LDA Results (20 Topic Model):**
+**LDA Results (20 Topic Model):** 
 
 The top 10 keywords from all 20 topics (unlabeled and unordered) are shown below. The topics can be compared with the NMF model of the same thematic granularity (presented in the next section).
 
@@ -112,12 +116,27 @@ Topic| Keywords |
 |18|	mechanism, level, cell, plant, response, growth, material, form, enhance, oil|
 |19|	fault, rate, basin, km, fold, central, deformation, tectonic, time, range|
 
+~ **LDA Interpretation (20 Topic Model):** A wordcloud summarizing the top 10 keywords from the 10 most significant topics is shown below. 
+
+<div style="text-align:center"><img src="figures/LDA-mallet-20-word-clouds.png" alt="project_funding" width="800"/></div>
+
+We produced interfaces for the most coherent LDA topic models using [pyLDAvis](https://nbviewer.jupyter.org/github/bmabey/pyLDAvis/blob/master/notebooks/pyLDAvis_overview.ipynb) at several levels of thematic granularity. The browser-based tool offers a interactive visualization of topics estimated with LDA. The distance between topics (Jensen-Shannon divergence) is computed and multidimensional scaling (principal components) projects the intertopic distances onto two dimensions. The size of topics and their distributions, as well as the saliency of terms within each topic and across the entire corpus, are visible. As a result, pyLDAvis supports interpretation of: 1) the meaning of each topic; 2) the prevalence of each topic; and 3) the relationship among topics (Sievert and Shirley, 2014). 
+
+The 
+[20 topic model](https://github.com/saralafia/Study-3-master/blob/master/pyLDAvis/lda-mallet-20.html): Multidimensional scaling -> "neighborhoods" of topics...
+
+<img src="figures/pyLDAvis-20-topics.png" alt="LDA-coherence" width="600"/>
+
 ### Non-negative Matrix Factorization (NMF)
 The NMF approach (Arora, 2013) relies on linear algebra and has been shown to produce higher quality topics for smaller or sparser datasets. We generated the NMF models using [Scikit-learn](https://medium.com/mlreview/topic-modeling-with-scikit-learn-e80d33668730) and used an initialization procedure called Nonnegative Double Singular Value Decomposition (nndsvd), which is best for sparse data. We fit [model parameters](https://github.com/derekgreene/topic-model-tutorial/) using tf-idf (term frequency–inverse document frequency) features. We tested the same range of topics (2 - 100) as we did previously with LDA to determine models yielding the highest coherence scores. 
 
 **NMF Coherence:**
 
+The shape of the curve below suggests a relative maximum coherence score for our LDA model of 40 topics, after which coherence continues to increase. Models with fewer than 10 topics have a low coherence score. On whole, NMF produced models with higher coherence scores than the LDA models. 
+
 <img src="figures/NMF-coherence.png" alt="LDA-coherence" width="500"/>
+
+The most coherent NMF model (as shown below) has the maximum number of topics in the iterations we performed (100 topics) suggesting that it might be possible to produce models with even finer thematic granularity and higher coherence scores. For purposes of summarization and comparison with LDA, we report the findings from our 20 topic model in the following section.
 
 | Topics| Coherence Score (0 - 1) |
 |-------------:|------:|
@@ -154,53 +173,65 @@ Topic| Keywords |
 |19|	kelp, giant, forest, biomass, forests, pyrifera, macrocystis, spatial, disturbance, california|
 |20|	project, restoration, campus, ucsb, slough, open, california, coastal, devereux, habitat|
 
+~ **NMF Interpretation (20 Topic Model):** 
+
+t-SNE (Maaten and Hinton, 2008)
+
+<div style="text-align:center"><img src="figures/LDA-gensim-14-topic-clusters-V1.png" alt="project_funding" width="800"/></div>
+
 ### Hierarchical LDA (hLDA)
 
 An extension of LDA for learning topic hierarchies is hLDA (Griffiths et al., 2004). This approach estimates the structure of a hierarchy and partitions documents nonparametrically. We use an hLDA implementation from [Tomotopy](https://bab2min.github.io/tomotopy). The following summarizes our findings at several hierarchical levels. 
 
-| Level | Topics| Perplexity Score |
+| Depth | Topics (per Level)| Perplexity Score |
 |----------|-------------:|------:|
-| 2|  272   |  3185.40 | 
-| 3|  424    | 3921.60 | 
-| 4|  560     | 3622.80 | 
+| 2|  265 (1, 264)   |  3185.40 | 
+| 3|  393 (1, 80, 312)    | 3921.60 | 
+| 4|  522 (1, 29, 83, 409)     | 3622.80 | 
 
-## Visualization
+**hLDA Results (3 Level Model):** 
 
-### pyLDAvis (LDA)
+We estimated a three level topic hierarchy from the corpus. An example from the hierarchy is shown below. Each node contains the top 10 keywords from selected corresponding topic distributions.
 
-A wordcloud summarizing the top 10 keywords from the 10 most significant topics is shown below. 
+<img src="figures/hLDA-3-level.png" alt="LDA-coherence" width="600"/>
 
-<div style="text-align:center"><img src="figures/LDA-mallet-20-word-clouds.png" alt="project_funding" width="800"/></div>
+**hLDA Results (4 Level Model):** 
 
-We deployed pyLDAvis interfaces for the most coherent models at several levels of thematic granularity. The [pyLDAvis](https://nbviewer.jupyter.org/github/bmabey/pyLDAvis/blob/master/notebooks/pyLDAvis_overview.ipynb) browser offers a web-based interactive visualization of topics estimated with LDA. It is intended to answer three questions: 1) What is the meaning of each topic?; 2) How prevalent is each topic?; and 3) How do the topics relate to each other? (Sievert and Shirley, 2014). The distance between topics (Jensen-Shannon divergence) is computed and multidimensional scaling (principal components) projects the intertopic distances onto two dimensions. The size of topics and their distributions, as well as the saliency of terms within each topic and across the entire corpus, are visible. 
+We also estimated a four level topic hierarchy from the corpus and show an example from it below as a comparison. Each node contains the top 10 keywords. Red keywords are shared in common with topics from the three-level model shown above. 
 
-The "loading" of principal components (PC1/PC2) are: ****
+<img src="figures/hLDA-4-level.png" alt="LDA-coherence" width="600"/>
 
-"Reading" the **20 topic model (LDA)**: 
+~ **hLDA Interpretation (3 Level Model):** 
 
-[lda-mallet-20.html](https://github.com/saralafia/Study-3-master/blob/master/pyLDAvis/lda-mallet-20.html)
+~ **hLDA Interpretation (4 Level Model):** 
 
-* Geomorphology (Topic 13)...
+hierarchical network (Newman, 2010)
 
-We also generated: 
+## ~Visualization
 
-1. the most representative documents for each topic; 
-2. the topic distribution across documents; 
-3. and the dominant topics for each document.
+The views of research documents that each topic modeling algorithm supports are:
 
-### t-SNE (NMF)
+- LDA (**topics** as *objects - neighborhoods*): sunburst, circos plot (GRAPHS)
+- hLDA (**topics, words** as *objects - network*): treemap, dendrogram, sankey (TREES)
+- NMF (**topics, documents** in a *field*): t-SNE, PCA (MAPS)
 
-(Maaten and Hinton, 2008)
+While there are many possible configurations resulting from this, our primary goal is to map each of ERI's PIs in a relative topic space. The binding between the *topic* and the *PI* is the topic composition of each research document (project or publication). Each research document (publication, project) is associated with a PI or a set of PIs. From our topic models, we generate: 
 
-### hierarchical network (hLDA)
+- the most representative **documents** for each **topic**; 
+- the distribution of **topics** across **documents**; 
+- and the dominant **words** for each **topic**.
 
-(Newman, 2010)
+**Dashboard prototype:** 
+
+- build interface with [Plotly Dash](https://plotly.com/python/) for surveying ERI PIs; 
+- show change over time (split corpus in half); 
+- explore relationship between hierarchy (GRAPHS/TREES) and neighborhood (MAPS)
 
 ## Evaluation
 
-* assign topics (and words?) to every PI
-* build an interface (DASH) for surveying ERI PIs
-* have ERI PIs evaluate their topc assignment(s)
+~ **Internal vignette:** ERI PIs evaluate their topic assignments...
+
+~ **External vignette:** Reviewers evaluate the topics of all research documents...
 
 ## References
 
