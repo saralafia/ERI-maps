@@ -20,9 +20,7 @@ We analyze funded projects and publications from ERI's **240** principal investi
 
 **Cognitive Heuristics**: By contrast, these heuristics reflect "meaningful units" of information (levels of thematic granularity) that a viewer (such as an external reviewer) has in mind. They seem to be better suited to our task of defining and designing a suitable range of topics to model.
 
-- *Miller's law* (Miller, 1956): The average person can hold approximately 7±2 objects or digits in working memory, limiting the transmission and processing of information. These objects can be chunked (e.g. 7 digits, 6 letters, 5 words). This range suggests at least two levels of granularity with the coarsest granularity level of **5 - 9 objects** and the second level bounded by **25 - 81 objects**. 
-- *Perception in chess* (Chase and Simon, 1973): Chess masters memorize thousands of distinct configurations of pieces on a board and do this by creating perceptual chunks. The number of relations a player can memorize varies by skill but is roughly **2 - 100 relations**. This suggests that chunks are hierarchically organized with larger chunks comprised of simpler, smaller ones.
-- *Dunbar's number* (Dunbar, 1992): Social structures have been found to be shaped, and limited, by brain size. **150 social ties** have been proposed as an upper limit to maintain "social" cohesion and avoid information overload. This cognitive constraint from anthropology is also relevant, as it suggests a maximum number of relationships that an individual can monitor simultaneously. 
+- *Miller's law*: The average person can hold approximately 7±2 "chunks" in working memory (e.g. 7 digits, 6 letters, 5 words), limiting the transmission and processing of information (Miller, 1956). This suggests at least two levels of granularity for our topic models, with the coarsest granularity level of 7±2 (**5 - 9 chunks)** and the second level bounded by (5 x 5) to (9 x 9), a range of (**25 - 81 chunks**). 
 
 In addition to these scientometric and cognitive heuristics, we also report **coherence scores** for the models that we produce, which allow us to compare models across levels of thematic granularity. Topic coherence measures the extent to which top terms representing a topic are semantically
 related relative to the corpus (Greene et al., 2014). This allows us to select a model with a number of topics yielding a relatively high coherence score. Compared with similar measures, including perplexity and log-likelihood, for evaluating topic model quality, coherence is considered to be more human interpretable. 
@@ -181,13 +179,17 @@ t-SNE (Maaten and Hinton, 2008)
 
 ### Hierarchical LDA (hLDA)
 
-An extension of LDA for learning topic hierarchies is hLDA (Griffiths et al., 2004). This approach estimates the structure of a hierarchy and partitions documents nonparametrically. We use an hLDA implementation from [Tomotopy](https://bab2min.github.io/tomotopy). The following summarizes our findings at several hierarchical levels. 
+An extension of LDA for learning topic hierarchies is hLDA (Griffiths et al., 2004). This approach estimates the structure of a hierarchy and partitions documents nonparametrically. We use an hLDA implementation from [Tomotopy](https://bab2min.github.io/tomotopy). The following summarizes our findings at several hierarchical levels. The hierarchical model with a depth of 4 has the lowest perplexity score, a measure of how well a probability model predicts a sample for a given number of topics. 
 
-| Depth | Topics (per Level)| Perplexity Score |
-|----------|-------------:|------:|
-| 2|  265 (1, 264)   |  3185.40 | 
-| 3|  393 (1, 80, 312)    | 3921.60 | 
-| 4|  522 (1, 29, 83, 409)     | 3622.80 | 
+| Depth | Total Topics | Number of Topics per Level| Perplexity Score |
+|----------|-------------:|------:|------:|
+| 3|  393 | 1, 80, 312    | 3921.60 | 
+| **4**|  522 | 1, 29, 83, 409     | **3622.80** | 
+| 5|  555 | 1, 15, 39, 97, 403     | 3645.70 | 
+| 6|  742 | 1, 17, 31, 69, 167, 457     | 3697.96 | 
+| 7|  662 | 1, 8, 15, 32, 55, 134, 417    | 3928.90 | 
+| 8|  807 | 1, 4, 12, 21, 39, 77, 166, 487    | 3867.75 | 
+| 9|  1077 | 1, 5, 9, 11, 32, 77, 121, 243, 578   | 3996.23 | 
 
 **hLDA Results (3 Level Model):** 
 
@@ -200,8 +202,6 @@ We estimated a three level topic hierarchy from the corpus. An example from the 
 We also estimated a four level topic hierarchy from the corpus and show an example from it below as a comparison. Each node contains the top 10 keywords. Red keywords are shared in common with topics from the three-level model shown above. 
 
 <img src="figures/hLDA-4-level.png" alt="LDA-coherence" width="600"/>
-
-~ **hLDA Interpretation (3 Level Model):** 
 
 ~ **hLDA Interpretation (4 Level Model):** 
 
@@ -227,11 +227,11 @@ While there are many possible configurations resulting from this, our primary go
 - show change over time (split corpus in half); 
 - explore relationship between hierarchy (GRAPHS/TREES) and neighborhood (MAPS)
 
-## Evaluation
+## ~Evaluation
 
-~ **Internal vignette:** ERI PIs evaluate their topic assignments...
+**Internal vignette:** ERI PIs evaluate their topic assignments...
 
-~ **External vignette:** Reviewers evaluate the topics of all research documents...
+**External vignette:** Reviewers evaluate the topics of all research documents...
 
 ## References
 
