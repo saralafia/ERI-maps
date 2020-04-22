@@ -78,12 +78,12 @@ Following our heuristics, the model with the highest coherence score in the firs
 
 Number of Topics| Coherence Score (0 - 1) | 
 |-------------:|-------------:|------:|
-| **43** |0.5444  |
+| **43** | **0.5444**  |
 | 47 |0.5376 | 
 | 55 |0.5347  | 
 | 67 |0.5330 | 
 | 52 |0.5328 | 
-| **8** |0.4657 | 
+| **8** | **0.4657** | 
 | 9|0.462| 
 | 7 |0.4576 | 
 | 5|0.4317  | 
@@ -117,6 +117,8 @@ We also produced interfaces for the 8 and 43 topic models using [pyLDAvis](https
 
 An extension of LDA for learning topic hierarchies is hLDA (Griffiths et al., 2004). This approach estimates the structure of a hierarchy and partitions documents nonparametrically. We use an hLDA implementation from [Tomotopy](https://bab2min.github.io/tomotopy). The following summarizes our findings at several hierarchical levels. The hierarchical model with a depth of 4 has the lowest perplexity score, a measure of how well a probability model predicts a sample for a given number of topics. 
 
+The model producing the lowest perplexity score is the **4-level** hierarchical model. The first level of all models is **1 "parent" topic**. Interpreting the number of topics per level using our heuristics, the second level of the 4-level model has **29 topics**, which is within the suitable range of topics that we predicted (25 - 81). Extending Miller's Law to a third and fourth level, a suitable range of topics for each would fall between ((5 x 5 x 5) to (9 x 9 x 9)) and ((5 x 5 x 5 x 5) to (9 x 9 x 9 x 9)) respectively. Neither the third nor fourth levels however fall within these predicted ranges; **83 topics** (125 - 729) and **409 topics** (625 - 6561). The findings from hierarchical models between 3 - 9 levels of depth are summarized below.
+
 | Depth | Total Topics | Number of Topics per Level| Perplexity Score |
 |----------|-------------:|------:|------:|
 | 3|  393 | 1, 80, 312    | 3921.60 | 
@@ -133,7 +135,7 @@ We estimated a four level topic hierarchy from the corpus and show an example fr
 
 <img src="figures/hLDA-4-level.png" alt="LDA-coherence" width="600"/>
 
-~ **hLDA Interpretation (4 Level Model):** 
+**hLDA Interpretation (4 Level Model):** 
 
 hierarchical network (Newman, 2010)
 
@@ -209,9 +211,9 @@ While there are many possible configurations resulting from this, our primary go
 
 ## ~Evaluation
 
-**Internal vignette:** ERI PIs evaluate their topic assignments...
+**Internal task:** ERI PIs evaluate their topic assignments...
 
-**External vignette:** Reviewers evaluate the topics of all research documents...
+**External task:** Reviewers evaluate the topics of all research documents...
 
 ## References
 
