@@ -1,4 +1,4 @@
-# Designing Adaptive Thematic Views of Research
+# Designing Multi-Level Spatial Views of Research Themes
 In this project, we determine major research topics at UC Santa Barbara's Earth Research Institute ([ERI](https://www.eri.ucsb.edu/)) and visualize their evolution over the last decade. Our goal is to complement conventional, scientometric approaches for reviewing a body of research with systematic, qualitative approaches. We first create meaningful abstractions of the body of research with topic modeling; we then use these topic models to map the body of research. The maps that we design are adaptive, showing views of ERI's research at multiple levels of thematic granularity, which support the academic review process. 
 
 ## Heuristics and data sources
@@ -70,32 +70,46 @@ In addition to the scientometric and cognitive heuristics we previously develope
 ### Latent Dirichlet Allocation (LDA)
 The LDA algorithm (Blei et al., 2003) is a generative probabilistic model. In each run of LDA, we set the random seed to 1, ensuring model reproducibility. The [MALLET](http://mallet.cs.umass.edu./) implementation of LDA (McCallum, 2002) produced higher quality topics than the Gensim and Scikit-learn implementations. We determined a sensible number of topics to test (2 - 100) based on the previously established heuristics and iterated through these to determine models yielding the highest coherence scores.
 
+Following our heuristics, the model with the highest coherence score in the first level of thematic granularity (between 5 - 9 topics) has **8 topics** and the model with the highest coherence score in the second level (between 25 - 81 topics) has **43 topics**. The findings are summarized below.
+
 **LDA Coherence (2 - 100 Topics):**
 
 <img src="figures/LDA-coherence-V2.png" alt="LDA-coherence" width="500"/>
 
-Number of Topics| Coherence Score (0 - 1) |
-|-------------:|------:|
-| 43 | 0.5444 |
-| 47 | 0.5376 |
-| 55 | 0.5347 |
-| 67 | 0.5330 |
-| 52 | 0.5328 |
-| 24 | 0.5327 |
-| 49 | 0.5320 |
-| 61 | 0.5311 |
-| 56 | 0.5304 |
-| 39 | 0.5296 |
+Number of Topics| Coherence Score (0 - 1) | 
+|-------------:|-------------:|------:|
+| **43** |0.5444  |
+| 47 |0.5376 | 
+| 55 |0.5347  | 
+| 67 |0.5330 | 
+| 52 |0.5328 | 
+| **8** |0.4657 | 
+| 9|0.462| 
+| 7 |0.4576 | 
+| 5|0.4317  | 
+| 6|0.4292 | 
 
-**LDA Results (43 Topic Model):** 
+**LDA Results:** 
 
-Wordclouds summarizing the first 10 topics of the model and the top 10 keywords in each is shown below. Keywords are weighted within the topic and sized accordingly in each topic's wordcloud.
+Wordclouds summarizing the first 10 topics of the model and the top 10 keywords for both models are shown below. Keywords are weighted within the topic and sized accordingly in each topic's wordcloud.
+
+*8 topic word cloud:*
+
+<div style="text-align:center"><img src="figures/LDA-mallet-8-word-clouds.png" alt="project_funding" width="800"/></div>
+
+*43 topic word cloud:*
 
 <div style="text-align:center"><img src="figures/LDA-mallet-43-word-clouds.png" alt="project_funding" width="800"/></div>
 
-**LDA Interpretation (43 Topic Model):** 
+**LDA Interpretation:** 
 
-We also produced an interface for the 43 topic LDA model using [pyLDAvis](https://nbviewer.jupyter.org/github/bmabey/pyLDAvis/blob/master/notebooks/pyLDAvis_overview.ipynb). The browser-based tool offers a interactive visualization of topics estimated with LDA. The distance between topics (Jensen-Shannon divergence) is computed and multidimensional scaling (principal components) projects the intertopic distances onto two dimensions. The size of topics and their distributions, as well as the saliency of terms within each topic and across the entire corpus, are visible. As a result, pyLDAvis supports interpretation of: 1) the meaning of each topic; 2) the prevalence of each topic; and 3) the relationship among topics (Sievert and Shirley, 2014). 
+We also produced interfaces for the 8 and 43 topic models using [pyLDAvis](https://nbviewer.jupyter.org/github/bmabey/pyLDAvis/blob/master/notebooks/pyLDAvis_overview.ipynb). The browser-based tool offers a interactive visualization of topics estimated with LDA. The distance between topics (Jensen-Shannon divergence) is computed and multidimensional scaling (principal components) projects the intertopic distances onto two dimensions. The size of topics and their distributions, as well as the saliency of terms within each topic and across the entire corpus, are visible. As a result, pyLDAvis supports interpretation of: 1) the meaning of each topic; 2) the prevalence of each topic; and 3) the relationship among topics (Sievert and Shirley, 2014). 
+
+*8 topic pyLDAvis:*
+
+<img src="figures/pyLDAvis-8-topics.png" alt="LDA-coherence" width="600"/>
+
+*43 topic pyLDAvis:*
 
 <img src="figures/pyLDAvis-43-topics.png" alt="LDA-coherence" width="600"/>
 
@@ -132,7 +146,7 @@ NMF produced models with higher coherence scores than the LDA models. The most c
 
 <img src="figures/NMF-coherence.png" alt="LDA-coherence" width="500"/>
 
-| Topics| Coherence Score (0 - 1) |
+| Number of Topics| Coherence Score (0 - 1) |
 |-------------:|------:|
 | 100 | 0.7078 |
 | 84 | 0.7076 |
