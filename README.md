@@ -6,7 +6,7 @@ We analyze funded projects and publications from ERI's **240** principal investi
 
 To determine a suitable range of topics to model, we first survey ERI's: 1) fields of research (from publications); 2) funding agencies (of projects); and 3) academic departments (of affiliated PIs). These heuristics do not capture the "aboutness" of ERI's research in terms of subjects or methods; thus they do not help to approximate a range of topics to model. However, these measures do highlight the multidisciplinarity of ERI's research portfolio and give a sense of its underlying shape.
 
-- *Fields of research (FOR)*: University administrators or external funding agencies are often concerned with how research units are relatively positioned or compare externally across universities. Classification systems like FOR enable the comparison of resesearch across academic divisions. Publications are classified hierarchically into [fields of research](https://dimensions.freshdesk.com/support/solutions/articles/23000018826-what-is-the-background-behind-the-fields-of-research-for-classification-system-) representing 22 divisions (broad subject areas or research disciplines) and 157 groups (detailed subsets of divisions). The publication database assigns FOR codes at the level of the individual article. Publications authored by ERI PIs represent **19 divisions**  and **112 groups** of academic research. The majority of ERI's research falls into just 4 divisions (summarized below). 
+- *Fields of research (FOR)*: University administrators or external funding agencies are often concerned with how research units are relatively positioned or compare externally across universities. Classification systems like FOR enable the comparison of research across academic divisions. Publications are classified hierarchically into [fields of research](https://dimensions.freshdesk.com/support/solutions/articles/23000018826-what-is-the-background-behind-the-fields-of-research-for-classification-system-) representing 22 divisions (broad subject areas or research disciplines) and 157 groups (detailed subsets of divisions). The publication database assigns FOR codes at the level of the individual article. Publications authored by ERI PIs represent **19 divisions**  and **112 groups** of academic research. The majority of ERI's research falls into just 4 divisions (summarized below). 
 
 <div style="text-align:center"><img src="figures/FOR_divisions.png" alt="FOR_divisions" width="600"/></div>
 
@@ -75,7 +75,7 @@ Following our heuristics, the model with the highest coherence score in the firs
 <img src="figures/LDA-coherence-V2.png" alt="LDA-coherence" width="500"/>
 
 | Number of Topics| Coherence Score (0 - 1) | 
-|-------------:|-------------:|------:|
+|-------------:|-------------:|
 | **43** | **0.5444**  |
 | 47 |0.5376 | 
 | 55 |0.5347  | 
@@ -128,7 +128,7 @@ An example of topics taken from each of the 4-levels is shown below. Each topic 
 <img src="figures/hLDA-4-level.png" alt="LDA-coherence" width="600"/>
 
 ### Non-negative Matrix Factorization (NMF)
-The NMF approach (Arora et al., 2013) has been shown to produce higher quality topics for smaller or sparser datasets. We generate the NMF models using [Scikit-learn](https://medium.com/mlreview/topic-modeling-with-scikit-learn-e80d33668730) and used an initialization procedure called Nonnegative Double Singular Value Decomposition (nndsvd), which is appropriate for sparse data (e.g. document titles, abstracts only). We fit the models using the tf-idf features that we previously calculated. We test the same range of topics (2 - 100) as we did previously to determine models yielding the highest coherence scores; NMF produces models with higher coherence scores than the LDA models. 
+The NMF approach (Arora et al., 2013) has been shown to produce higher quality topics for smaller or sparser datasets. We generate the NMF models using [Scikit-learn](https://scikit-learn.org/stable/) and used an initialization procedure called Nonnegative Double Singular Value Decomposition (nndsvd), which is appropriate for sparse data (e.g. document titles, abstracts only). We fit the models using the tf-idf features that we previously calculated. We test the same range of topics (2 - 100) as we did previously to determine models yielding the highest coherence scores; NMF produces models with higher coherence scores than the LDA models. 
 
 Following our heuristics, the model with the highest coherence score in the first level of thematic granularity (between 5 - 9 topics) has **9 topics** and the model with the highest coherence score in the second level (between 25 - 81 topics) has **70 topics**. The findings are summarized below. 
 
