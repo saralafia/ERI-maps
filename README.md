@@ -1,7 +1,7 @@
 # Designing Multi-Level Spatial Views of Research Themes
 In this project, we determine major research themes at UC Santa Barbara's Earth Research Institute ([ERI](https://www.eri.ucsb.edu/)) and visualize their evolution over the last decade. Our goal is to complement quantitative, scientometric approaches for reviewing a body of research with qualitative, systematic approaches. We first create abstractions of the body of research with topic modeling and then use the topic models to map the body of research. The maps that we design show spatial views of ERI's research at multiple levels of thematic granularity, which support the academic review process. 
 
-## Heuristics and data sources
+## Data sources and heuristics
 We analyze funded projects and publications from ERI's **240** principal investigators (PIs) active from **2009 - 2019**. ERI maintains records of active PIs and funded projects. We gather PI publication metadata from the [Dimensions API](https://www.dimensions.ai/). Only funded projects or publications with titles and abstracts are analyzed, resulting in **3,770** research documents (3,108 publications and 662 funded projects). 
 
 To determine a suitable range of topics to model, we first survey ERI's: 1) fields of research (from publications); 2) funding agencies (of projects); and 3) academic departments (of affiliated PIs). These heuristics do not capture the "aboutness" of ERI's research in terms of subjects or methods; thus they do not help to approximate a range of topics to model. However, these measures do highlight the multidisciplinarity of ERI's research portfolio and give a sense of its underlying shape.
@@ -50,7 +50,7 @@ We determine distinct document terms using the measure of term frequency–inver
 19. california (36.53)
 20. environmental (36.39)
 
-Next, we follow a standard natural language processing pipeline (Bird et al., 2009) to reformat the documents into a dictionary and a corpus: 
+Next, we follow a standard natural language processing pipeline (Boyd-Graber et al., 2014) to reformat the documents into a dictionary and a corpus: 
 
 1. extension of the stopword list to remove frequent, generic terms determined by tf-idf ('data', 'study', 'project', 'research', 'collaborative', 'include', 'result', 'increase', 'high', 'low', 'large', 'include', 'based');
 2. tokenization, conversion to lowercase, and construction of n-gram models (bigrams, trigrams) to preserve contiguous sequences of words (e.g. 'climate_change'); 
@@ -68,7 +68,7 @@ We take two kinds of topic modeling approaches: *probabilistic* (LDA, hLDA) and 
 In addition to the scientometric and cognitive heuristics we previously developed, we also report *coherence scores* for the topic models, which allow model comparison and evaluation across levels of thematic granularity. Coherence measures the extent to which top terms representing a topic are semantically related relative to the corpus (Mimno et al., 2011). This measure allows us to select a model with a number of topics yielding a relatively high coherence score. Compared with similar measures, including perplexity and log-likelihood, for evaluating topic model quality, coherence is considered to be more human interpretable (Greene et al., 2014). 
 
 ### Latent Dirichlet Allocation (LDA)
-The LDA algorithm (Blei et al., 2003) is a generative probabilistic model. In each run of LDA, we set the random seed to 1, ensuring model reproducibility. The [MALLET](http://mallet.cs.umass.edu./) implementation of LDA (McCallum, 2002) produced higher quality topics than the Gensim and Scikit-learn implementations. We tested 2 - 100 topics based on the previously established heuristics and iterated through these to determine models yielding the highest coherence scores.
+The LDA algorithm (Blei et al., 2003) is a generative probabilistic model. In each run of LDA, we set the random seed to 1, ensuring model reproducibility. The [MALLET](http://mallet.cs.umass.edu./) implementation of LDA produced higher quality topics than the Gensim and Scikit-learn implementations. We tested 2 - 100 topics based on the previously established heuristics and iterated through these to determine models yielding the highest coherence scores.
 
 Following our heuristics, the model with the highest coherence score in the first level of thematic granularity (between 5 - 9 topics) has **8 topics** and the model with the highest coherence score in the second level (between 25 - 81 topics) has **43 topics**. The findings are summarized below.
 
@@ -97,7 +97,7 @@ Wordclouds summarizing the first 10 topics of the model and the top 10 keywords 
 
 <div style="text-align:center"><img src="figures/LDA-mallet-43-word-clouds.png" alt="project_funding" width="800"/></div>
 
-We produce interfaces to the topic models using [pyLDAvis](https://nbviewer.jupyter.org/github/bmabey/pyLDAvis/blob/master/notebooks/pyLDAvis_overview.ipynb). The browser-based tool offers an interactive visualization of topics estimated with LDA. The distance between topics (Jensen-Shannon divergence) is computed; multidimensional scaling (principal components) projects the intertopic distances onto two dimensions. The size of topics and their distributions, as well as the saliency of terms within each topic and across the entire corpus, are visible. As a result, pyLDAvis supports interpretation of the meaning of each topic; the prevalence of each topic; and the relationships among topics (Sievert and Shirley, 2014). 
+We produce interfaces to the topic models using [pyLDAvis](https://nbviewer.jupyter.org/github/bmabey/pyLDAvis/blob/master/notebooks/pyLDAvis_overview.ipynb). The browser-based tool offers an interactive visualization of topics estimated with LDA. The distance between topics (Jensen-Shannon divergence) is computed; multidimensional scaling (principal components) projects the intertopic distances onto two dimensions. The size of topics and their distributions, as well as the saliency of terms within each topic and across the entire corpus, are visible. As a result, pyLDAvis supports interpretation of the meaning of each topic; the prevalence of each topic; and the relationships among topics. 
 
 *8 topic pyLDAvis:*
 
@@ -106,6 +106,8 @@ We produce interfaces to the topic models using [pyLDAvis](https://nbviewer.jupy
 *43 topic pyLDAvis:*
 
 <img src="figures/pyLDAvis-43-topics.png" alt="LDA-coherence" width="600"/>
+
+The topics resulting from LDA largely suggest methods (e.g. "model", "analysis", "task") that are indicative of ERI's research. While this is an interesting result, we hope to use topic modeling to identify subject matter. For example, if oceanographic modeling is one of ERI's major research themes, we would hope for terms related to "ocean" to surface as a primary facet of the data rather than terms related to "modeling" (which would serve nicely as a secondary facet). While we can imagine organizing working groups or committees within ERI decicated to these shared methods, they are not the focus of our current work; they do not help us capture the "aboutness" of ERI's body of research. Next, we test an extension of LDA (hierarchical LDA) and an alternative, deterministic approach (NMF) to compare with our results from LDA.
 
 ### Hierarchical LDA (hLDA)
 
@@ -123,12 +125,14 @@ The model producing the lowest perplexity score is the **4-level** hierarchical 
 | 8|  807 | 1, 4, 12, 21, 39, 77, 166, 487    | 3867.75 | 
 | 9|  1077 | 1, 5, 9, 11, 32, 77, 121, 243, 578   | 3996.23 | 
 
-An example of topics taken from each of the 4-levels is shown below. Each topic is a node labeled with its top 10 keywords; the edges are weighted by the number of documents assigned to each topic. 
+An example of topics taken from each of the 4-levels is shown below. Each topic is shown as a node labeled with its top 10 keywords; the edges connect parent topics (top) to children topics (below) and are weighted by the number of documents assigned to each topic. 
 
 <img src="figures/hLDA-4-level.png" alt="LDA-coherence" width="600"/>
 
+We expect that the topics we generate will emphasize similarities in the documents and that as a result, the topics will be well-distributed across the documents in the corpus; however, hLDA unevenly partitions the corpus with the majority of topics falling into broad, generic categories at each level. This method does not generate a relatively even distribution of topics to describe ERI's research; instead, it appears to emphasize work that is exceptionally different by distinguishing it into separate, comparatively small categories. For example, in the 4-level model, although there are 29 topics at the second level, most documents (3,586/3,770) fall into Topic 8; others, like Topic 10, are far more narrow and only describe a fraction of the documents (11/3,770). Furthermore, each level of the hierarchy appears to produce topics that are not comparably granular; Topic 10 in the 4-level model, for instance, is comprised of far more specific keywords than its second level counterparts. For these reasons, we decide not to pursue the hLDA topic model, although it may prove to be a useful technique for a more narrowly defined field of research.
+
 ### Non-negative Matrix Factorization (NMF)
-The NMF approach (Arora et al., 2013) has been shown to produce higher quality topics for smaller or sparser datasets. We generate the NMF models using [Scikit-learn](https://scikit-learn.org/stable/) and used an initialization procedure called Nonnegative Double Singular Value Decomposition (nndsvd), which is appropriate for sparse data (e.g. document titles, abstracts only). We fit the models using the tf-idf features that we previously calculated. We test the same range of topics (2 - 100) as we did previously to determine models yielding the highest coherence scores; NMF produces models with higher coherence scores than the LDA models. 
+The NMF approach (Arora et al., 2013) has been shown to produce higher quality topics for smaller or sparser datasets. We generate the NMF models using [Scikit-learn](https://scikit-learn.org/stable/) and use an initialization procedure called Nonnegative Double Singular Value Decomposition (nndsvd), which is appropriate for sparse data (e.g. document titles, abstracts only). We fit the models using the tf-idf features that we previously calculated. We test the same range of topics (2 - 100) as we did previously to determine models yielding the highest coherence scores; NMF produces models with higher coherence scores than the LDA models. 
 
 Following our heuristics, the model with the highest coherence score in the first level of thematic granularity (between 5 - 9 topics) has **9 topics** and the model with the highest coherence score in the second level (between 25 - 81 topics) has **70 topics**. The findings are summarized below. 
 
@@ -147,23 +151,25 @@ Following our heuristics, the model with the highest coherence score in the firs
 | 6 | 0.5200 |
 | 5 | 0.5009 |
 
-## ~Spatialization
+Of the three approaches to topic modeling, **NMF** appears to be the most promising for several reasons. Compared with the topics resulting from LDA, NMF produces topics that are more indicative of subject matter (rather than methods). The coherence scores of the NMF models are also higher than those of the LDA models and the NMF model is also better, making it suitable for dynamic topic modeling as the corpus is updated in the future.  
 
-[Selection of the "family" of topic models best suited to our task...]
+We adopt the NMF topic modeling approach at two-levels of thematic granularity: **a first level (5-9 topics)** and **a second level (25-81 topics)**. Our approach allows us to dynamically produce and or/update topic models with any number of topics within each of these ranges. We keep these levels of thematic granularity in mind as we spatialize the NMF topic model as they inform usability constraints (e.g. the number of chunks of information that reviewers are able to keep in mind). 
 
-[Levels of thematic granularity within that "family"... based on heuristics, coherence]
+[Can NMF be used to build a text classifier for documents? Is this possible? What happens to the current topics if more documents are added to the corpus over time?]
 
-The models yield three main units around which the spatializations can be oriented. While there are many possible configurations resulting from the topic models we produce, our primary goal is to address the following questions:
+## Spatialization
+
+The topic models yield three main units around which the spatializations can be oriented: topics, documents, and keywords. Document authorship (for publications and grant proposals) allows us to also associate PIs with topics. While there are many possible configurations resulting from these units, our primary goal is to address the following questions:
 
 1. How have ERI’s research **topics** changed?
 2. Which ERI research **documents** (publications, projects) are similar?
-3. Which of ERI **PIs** research shared topics?
+3. Which of ERI **keywords** research shared topics?
 
-These questions suggest distinct views of ERI's body of research. Using the topic models we selected at each level of thematic granularity, we develop spatial views of ERI's body of research. We structure these views along the lines of Franco Moretti's (2007) abstract models for literary history, which support "distant reading" of the corpus. 
+These questions suggest distinct views of ERI's body of research. Using the most coherent topic models we selected at each level of thematic granularity, we develop spatial views of ERI's body of research. We structure these views along the lines of Franco Moretti's (2007) abstract models for literary history, which support "distant reading" of the corpus in the form of:
 
-- **Graphs:** objects, event (time) RIDGELINE; topics changing over time
-- **Maps:** objects, neighborhood (space) t-SNE (Maaten and Hinton, 2008); document clustering
-- **Trees:** objects, network (combination of both) CIRCOS; Topic/document/PI relationships
+- **Graphs:** objects, event (time) topics changing over time
+- **Maps:** objects, neighborhood (space); document clustering
+- **Trees:** objects, network (combination of both); Topic/keyword relationships
 
 We develop a prototype dashboard with [Plotly Dash](https://plotly.com/python/)... 
 
@@ -171,9 +177,9 @@ We develop a prototype dashboard with [Plotly Dash](https://plotly.com/python/).
 
 Arora, S., Ge, R., Halpern, Y., Mimno, D., Moitra, A., Sontag, D., ... and Zhu, M. (2013). A practical algorithm for topic modeling with provable guarantees. In International Conference on Machine Learning (pp. 280-288).
 
-Bird, S., Loper, E., and Klein, E. (2009). Natural Language Processing with Python. O’Reilly Media Inc.
-
 Blei, D. M., Ng, A. Y., and Jordan, M. I. (2003). Latent dirichlet allocation. Journal of machine Learning research, 3(Jan), 993-1022.
+
+Boyd-Graber, J., Mimno, D., & Newman, D. (2014). Care and feeding of topic models: Problems, diagnostics, and improvements. Handbook of mixed membership models and their applications, 225255.
 
 Greene, D., O’Callaghan, D., & Cunningham, P. (2014). How many topics? stability analysis for topic models. In Joint European Conference on Machine Learning and Knowledge Discovery in Databases (pp. 498-513). Springer, Berlin, Heidelberg.
 
@@ -181,12 +187,8 @@ Griffiths, T. L., Jordan, M. I., Tenenbaum, J. B., and Blei, D. M. (2004). Hiera
 
 Maaten, L. van der, and Hinton, G. (2008). Visualizing data using t-SNE. Journal of Machine Learning Research, 9(Nov), 2579–2605.
 
-McCallum, Andrew Kachites. (2002). "MALLET: A Machine Learning for Language Toolkit." http://mallet.cs.umass.edu.
-
 Miller, G. A. (1956). The magical number seven, plus or minus two: Some limits on our capacity for processing information. Psychological review, 63(2), 81.
 
 Mimno, D., Wallach, H. M., Talley, E., Leenders, M., & McCallum, A. (2011, July). Optimizing semantic coherence in topic models. In Proceedings of the conference on empirical methods in natural language processing (pp. 262-272). Association for Computational Linguistics.
 
 Salton, G., Wong, A., & Yang, C. S. (1975). A vector space model for automatic indexing. Communications of the ACM, 18(11), 613-620.
-
-Sievert, C., and Shirley, K. (2014). LDAvis: A method for visualizing and interpreting topics. In Proceedings of the workshop on interactive language learning, visualization, and interfaces (pp. 63-70).
