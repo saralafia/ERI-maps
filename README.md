@@ -1,13 +1,15 @@
 # Designing Multi-Level Spatial Views of Research Themes
 The goal of this project is to model research themes studied at UC Santa Barbara's Earth Research Institute [ERI](https://www.eri.ucsb.edu/) and map their evolution over the past decade. We model topics from ERI's research documents and use these models to design maps of research themes. The maps offer spatial views of ERI's body of research at multiple levels of thematic granularity.
 
+[TOC]
+
 ## Data sources
-We analyze funded projects and publications from ERI's **240** principal investigators (PIs) active from **2009 - 2019**. ERI maintains records of active PIs and funded projects. We gather PI publication metadata from the [Dimensions API](https://www.dimensions.ai/). Only funded projects or publications with titles and abstracts are analyzed, resulting in **3,770** research documents (3,108 publications and 662 funded projects). 
+We analyze funded projects and publications from ERI's **240** principal investigators (PIs) active from **2009 - 2019**. ERI maintains records of active PIs and funded projects. We gather PI publication metadata from the [Dimensions API](https://www.dimensions.ai/). Only funded projects or publications with titles and abstracts are analyzed, resulting in **3,770** research documents (3,108 publications and 662 funded projects). [Data](https://github.com/saralafia/Study-3-master/tree/master/data) for PIs, projects, and publications are available in this repository. 
 
 ## Natural Language Processing
-We prepare the documents (titles and abstracts) for topic modeling by removing records with identical identifiers (DOIs), removing HTML tags, and reformatting ASCII extended characters. Documents range in length from 128 - 7,083 characters; the mean document length is 1,678 characters (as shown below).
+We prepare the documents (titles and abstracts) for topic modeling by removing records with identical identifiers (DOIs), removing HTML tags, and reformatting ASCII extended characters. Documents range in length from 128 - 7,083 characters; the mean document length is 1,678 characters (as shown below). The [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-heuristics.ipynb) used to process the data is available in this repository.
 
-<div style="text-align:center"><img src="figures/word-count-dist.png" alt="project_funding" width="600"/></div>
+<div style="text-align:center"><img src="figures/word-count-dist.png" alt="word-count-dist" width="600"/></div>
 
 We determine distinct document terms using the measure of term frequency–inverse document frequency, or tf-idf (Salton et al., 1975). We determine frequent terms that are generic and qualify as stopwords; we strip these terms from the documents. The 20 most distinctive words in the documents, along with their relative weights, are:
 
@@ -40,15 +42,15 @@ Next, we follow a standard natural language processing pipeline (Boyd-Graber et 
 
 From the processed documents, we create a dictionary (of word ids, word frequencies) and a corpus (a bag of words shown as a wordcloud below) to use in topic modeling.
 
-<div style="text-align:center"><img src="figures/wordcloud-cleaned-corpus.png" alt="project_funding" width="600"/></div> 
+<div style="text-align:center"><img src="figures/wordcloud-cleaned-corpus.png" alt="wordcloud-cleaned-corpus" width="600"/></div> 
 
 ## Topic Modeling
-We try two kinds of topic modeling approaches: *probabilistic* (LDA, hLDA) and *matrix factorization* (NMF). In probabilistic approaches, each document is treated as a mixture of a small number of topics; words and documents get a probability score for each topic (Blei, 2003). In matrix factorization approaches, methods from linear algebra are applied to decompose a document-term matrix (tf-idf) into a smaller set of matrices, which can be interpreted as a topic model (Lee and Seung, 1999). We report *coherence scores* for the topic models, which allow model comparison and evaluation across levels of thematic granularity. Coherence measures the extent to which top terms representing a topic are semantically related relative to the corpus (Mimno et al., 2011). This measure allows us to select a model with a number of topics yielding a relatively high coherence score.
+We try two kinds of topic modeling approaches: *probabilistic* (LDA, hLDA) and *matrix factorization* (NMF). We report *coherence scores* for the topic models, which allow us to compare models across levels of thematic granularity based on the number of topics (Mimno et al., 2011).
 
 ### Latent Dirichlet Allocation (LDA)
-The LDA algorithm (Blei et al., 2003) is a generative probabilistic model. In each run of LDA, we set the random seed to 1, ensuring model reproducibility. We pick the [MALLET](http://mallet.cs.umass.edu./) implementation of LDA, which produces higher quality topics than Gensim or Scikit-learn implementations. We iterate through models with 2 - 100 topics to find models with high coherence scores. The findings are summarized below.
+The LDA algorithm is a generative probabilistic model in which each document is treated as a mixture of a small number of topics; words and documents get a probability score for each topic (Blei et al., 2003). In each run, we set the random seed to 1, ensuring model reproducibility. We use the [MALLET](http://mallet.cs.umass.edu./) implementation of LDA, which produces higher quality topics than Gensim or Scikit-learn implementations. We iterate through models with 2 - 100 topics to find models with high coherence scores. The findings are summarized below. The LDA [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-LDA.ipynb) is available in this repository.
 
-<img src="figures/LDA-coherence-V2.png" alt="LDA-coherence" width="500"/>
+<img src="figures/LDA-coherence-V2.png" alt="LDA-coherence-V2" width="500"/>
 
 | Number of Topics| Coherence Score (0 - 1) | 
 |-------------:|-------------:|
@@ -65,17 +67,17 @@ The LDA algorithm (Blei et al., 2003) is a generative probabilistic model. In ea
 
 To interpret the models, we produce [pyLDAvis](https://nbviewer.jupyter.org/github/bmabey/pyLDAvis/blob/master/notebooks/pyLDAvis_overview.ipynb) interfaces. pyLDAvis supports interpretation of the meaning of each topic, the prevalence of each topic, and the relationships among topics.
 
-*8 topic pyLDAvis:*
+[8 topic pyLDAvis](https://github.com/saralafia/Study-3-master/blob/outputs/LDA/lda-mallet-8.html):
 
-<img src="figures/pyLDAvis-8-topics.png" alt="LDA-coherence" width="600"/>
+<img src="figures/pyLDAvis-8-topics.png" alt="pyLDAvis-8-topics" width="600"/>
 
-*43 topic pyLDAvis:*
+[43 topic pyLDAvis](https://github.com/saralafia/Study-3-master/blob/outputs/LDA/lda-mallet-43.html):
 
-<img src="figures/pyLDAvis-43-topics.png" alt="LDA-coherence" width="600"/>
+<img src="figures/pyLDAvis-43-topics.png" alt="pyLDAvis-43-topics" width="600"/>
 
 ### Hierarchical LDA (hLDA)
 
-An extension of LDA for learning topic hierarchies is hLDA (Griffiths et al., 2004). This approach estimates the structure of a hierarchy and partitions documents nonparametrically. We implement hLDA with [Tomotopy](https://bab2min.github.io/tomotopy). The following summarizes our findings at several hierarchical levels. The hierarchical model with a depth of 4 has the lowest perplexity score, which measures how well a probability model predicts a sample for a given number of topics. The findings from hierarchical models between 3 - 9 levels of depth are summarized below.
+hLDA is an extension of LDA for learning topic hierarchies; it estimates the structure of a hierarchy and partitions documents nonparametrically  (Griffiths et al., 2004). We implement hLDA with [Tomotopy](https://bab2min.github.io/tomotopy). The following summarizes our findings at several hierarchical levels. The hierarchical model with a depth of 4 has the lowest perplexity score, which measures how well a probability model predicts a sample for a given number of topics. The findings from hierarchical models between 3 - 9 levels of depth are summarized below. The hLDA [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-hLDA.ipynb) is available in this repository.
 
 | Depth | Total Topics | Number of Topics per Level| Perplexity Score |
 |----------|-------------:|------:|------:|
@@ -89,12 +91,12 @@ An extension of LDA for learning topic hierarchies is hLDA (Griffiths et al., 20
 
 An example from the 4-level model is shown below. Topics are nodes labeled with 10 top keywords and edges (weighted by number of assigned documents) connect parent topics to children topics. 
 
-<img src="figures/hLDA-4-level.png" alt="LDA-coherence" width="600"/>
+<img src="figures/hLDA-4-level.png" alt="hLDA-4-level" width="600"/>
 
 ### Non-negative Matrix Factorization (NMF)
-The NMF approach (Arora et al., 2013) has been shown to produce higher quality topics for smaller or sparser datasets. We generate the NMF models using [Scikit-learn](https://scikit-learn.org/stable/) and use an initialization procedure called Nonnegative Double Singular Value Decomposition (nndsvd), which is appropriate for sparse data (e.g. document titles and abstracts only). We fit the models using tf-idf features and test the same range of topics (2 - 100). The findings are summarized below. 
+In matrix factorization approaches, methods from linear algebra are applied to decompose a document-term matrix (tf-idf) into a smaller set of matrices, which can be interpreted as a topic model (Lee and Seung, 1999). The NMF approach (Arora et al., 2013) has been shown to produce higher quality topics for smaller or sparser datasets. We generate the NMF models using [Scikit-learn](https://scikit-learn.org/stable/) and use an initialization procedure called Nonnegative Double Singular Value Decomposition (nndsvd), which is appropriate for sparse data (e.g. document titles and abstracts only). We fit the models using tf-idf features and test the same range of topics (2 - 100). The findings are summarized below. The NMF [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-NMF.ipynb) is available in this repository.
 
-<img src="figures/NMF-coherence.png" alt="LDA-coherence" width="500"/>
+<img src="figures/NMF-coherence.png" alt="NMF-coherence" width="500"/>
 
 | Number of Topics| Coherence Score (0 - 1) |
 |-------------:|------:|
@@ -109,42 +111,33 @@ The NMF approach (Arora et al., 2013) has been shown to produce higher quality t
 | 6 | 0.5200 |
 | 5 | 0.5009 |
 
-We adopt the NMF topic modeling approach at two-levels of thematic granularity: **a first level (5-9 topics)** and **a second level (25-81 topics)**. Our approach allows us to dynamically produce topic models with any number of topics within each of these ranges. 
+Based on the topic models we produce, we adopt the NMF topic modeling approach at two-levels of thematic granularity: **a first level (5-9 topics)** and **a second level (25-81 topics)**. Our approach allows us to dynamically produce topic models with any number of topics within each of these ranges. 
 
 ## Spatialization
 
-The topic models yield three main units around which the spatializations can be oriented: topics, documents, and keywords. While there are many possible and interesting configurations of these units, our primary goal is to address the following questions:
-
-1. How have ERI’s research **topics** changed over time? 
-2. How are ERI's research **topics** related hierarchically?
-2. Which of ERI research **documents** (publications, projects) or **keywords** are similar?
-
-These questions suggest distinct views of ERI's body of research. Using the most coherent topic models we selected at each level of thematic granularity, we develop spatial views of ERI's body of research. We structure these views along the lines of Franco Moretti's (2007) abstract models for literary history, which support "distant reading" of the corpus in the form of:
-
-- **Maps:** objects (documents, keywords) embedded in relative topic space
-- **Trees:** nodes (topics, documents), edges (documents, keywords) showing hierarchy
+We try two kinds of spatialization approaches: those that produce *maps* (t-SNE, UMAP) and those that produce *trees* (dendrograms). We show the spatial configurations that result from presenting the high dimensional information from the topic models (NMF). 
 
 ### t-distributed stochastic neighbor embedding (t-SNE)
 
-The goal of mapping is to give an impression of the underlying thematic structure of the data. t-SNE (Maaten and Hinton, 2008) is a dimensionality reduction technique developed for mapping high dimensional objects. We generate the maps with [Scikit-learn](https://scikit-learn.org/stable/). We take topic models resulting from non-negative matrix factorization (NMF) and fit them to the tf-idf matrix. We then transform the fitted topic model into a series of coordinates to map with t-SNE. 
+t-SNE (Maaten and Hinton, 2008) is a dimensionality reduction technique developed for mapping high dimensional objects. We generate the maps with [Scikit-learn](https://scikit-learn.org/stable/). We take topic models resulting from non-negative matrix factorization (NMF) and fit them to the tf-idf matrix. We then transform the fitted topic model into a series of coordinates to map with t-SNE. 
 
-The key parameters that we control are *perplexity* (5-50), which defines the number of nearest neighbors, and *early_exaggeration* (default: 12.0), which determines the compactness of resulting clusters and the space between them. We choose a perplexity of 7 and early exaggeration of 5 for the t-SNE map shown below. 
+The key parameters that we control are *perplexity* (5-50), which defines the number of nearest neighbors, and *early_exaggeration* (default: 12.0), which determines the compactness of resulting clusters and the space between them. We choose a perplexity of 7 and early exaggeration of 5 for the t-SNE map shown below. The t-SNE [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-maps.ipynb) is available in this repository.
 
-<img src="figures/NMF-t-SNE-9-topic.png" alt="LDA-coherence" width="600"/>
-
-[figure of word2vec t-SNE]
-
-[figure of topic embedding]
+<img src="figures/NMF-t-SNE-9-topic.png" alt="NMF-t-SNE-9-topic" width="600"/>
 
 ### Uniform manifold approximation and projection (UMAP)
 
 We also experiment with UMAP (McInnes et al., 2018) on our data to compare the spatial layout and clustering of UMAP with t-SNE. We use [umap-learn](https://umap-learn.readthedocs.io/en/latest/) to generate the UMAP maps. It scales and preserves global data structure better than t-SNE, in which between-cluster similarities are not always preserved. The process for transforming the non-negative matrix factorization (NMF) and fitting it is nearly identical to that of t-SNE; however, UMAP can work directly with high-dimensional data. 
 
-The key parameters are *n_neighbors* (default=15), which defines the number of neighbors (and is similar to *perplexity* in t-SNE), *min_dist* (default=0.1), which controls how tightly the clusters are packed (and is similar to *early exaggeration* in t-SNE), and *metric* (cosine, euclidean...), which determines how distance is computed. We choose n_neighbors of 10 and min_dist of 0.1. Interactive prototypes of these plots created with [Bokeh](https://docs.bokeh.org/en/latest/index.html) are also available in this repository.
+The key parameters are *n_neighbors* (default=15), which defines the number of neighbors (and is similar to *perplexity* in t-SNE), *min_dist* (default=0.1), which controls how tightly the clusters are packed (and is similar to *early exaggeration* in t-SNE), and *metric* (cosine, euclidean...), which determines how distance is computed. We choose n_neighbors of 10 and min_dist of 0.1. Interactive prototypes of these plots created with [Bokeh](https://docs.bokeh.org/en/latest/index.html) are also available in a [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-maps.ipynb) in this repository.
 
-<img src="figures/NMF-UMAP-9-topic.png" alt="LDA-coherence" width="600"/>
+<img src="figures/NMF-UMAP-9-topic.png" alt="NMF-UMAP-9-topic" width="600"/>
 
-### dendrogram
+### Dendrogram
+
+To produce a tree, we select a dendrogram representation, to cluster topics hierarchically. We use [SciPy](https://www.scipy.org/) to generate a dendrogram of topics in the 70 topic model. We use a matrix of the 70 topics and their term weights as an input. From this, we determine a number of aggolmerative clusters for the topics (7). We then generate a linkage dendrogram using a ward method to minimize with euclidean distance between parameters. The dendrogram [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-trees.ipynb) is available in this repository.
+
+<img src="figures/NMF-t-SNE-70-topic-dendrogram-labeled.png" alt="NMF-t-SNE-70-topic-dendrogram-labeled" width="600"/>
 
 ## References
 
@@ -154,15 +147,11 @@ Blei, D. M., Ng, A. Y., and Jordan, M. I. (2003). Latent dirichlet allocation. J
 
 Boyd-Graber, J., Mimno, D., & Newman, D. (2014). Care and feeding of topic models: Problems, diagnostics, and improvements. Handbook of mixed membership models and their applications, 225255.
 
-Greene, D., O’Callaghan, D., & Cunningham, P. (2014). How many topics? stability analysis for topic models. In Joint European Conference on Machine Learning and Knowledge Discovery in Databases (pp. 498-513). Springer, Berlin, Heidelberg.
-
 Griffiths, T. L., Jordan, M. I., Tenenbaum, J. B., and Blei, D. M. (2004). Hierarchical topic models and the nested chinese restaurant process. In Advances in neural information processing systems (pp. 17-24).
 
 Maaten, L. van der, and Hinton, G. (2008). Visualizing data using t-SNE. Journal of Machine Learning Research, 9(Nov), 2579–2605.
 
 McInnes, L., Healy, J., & Melville, J. (2018). Umap: Uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426.
-
-Miller, G. A. (1956). The magical number seven, plus or minus two: Some limits on our capacity for processing information. Psychological review, 63(2), 81.
 
 Mimno, D., Wallach, H. M., Talley, E., Leenders, M., & McCallum, A. (2011, July). Optimizing semantic coherence in topic models. In Proceedings of the conference on empirical methods in natural language processing (pp. 262-272). Association for Computational Linguistics.
 
