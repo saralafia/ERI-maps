@@ -1,8 +1,6 @@
 # Designing Multi-Level Spatial Views of Research Themes
 The goal of this project is to model research themes studied at UC Santa Barbara's Earth Research Institute [ERI](https://www.eri.ucsb.edu/) and map their evolution over the past decade. We model topics from ERI's research documents and use these models to design maps of research themes. The maps offer spatial views of ERI's body of research at multiple levels of thematic granularity.
 
-[TOC]
-
 ## Data sources
 We analyze funded projects and publications from ERI's **240** principal investigators (PIs) active from **2009 - 2019**. ERI maintains records of active PIs and funded projects. We gather PI publication metadata from the [Dimensions API](https://www.dimensions.ai/). Only funded projects or publications with titles and abstracts are analyzed, resulting in **3,770** research documents (3,108 publications and 662 funded projects). [Data](https://github.com/saralafia/Study-3-master/tree/master/data) for PIs, projects, and publications are available in this repository. 
 
@@ -115,11 +113,11 @@ Based on the topic models we produce, we adopt the NMF topic modeling approach a
 
 ## Spatialization
 
-We try two kinds of spatialization approaches: those that produce *maps* (t-SNE, UMAP) and those that produce *trees* (dendrograms). We show the spatial configurations that result from presenting the high dimensional information from the topic models (NMF). 
+We try two kinds of spatialization approaches: *maps* (t-SNE, UMAP) and *trees* (dendrograms). These are spatial configurations of high dimensional information (topic distributions) from the NMF topic model. 
 
 ### t-distributed stochastic neighbor embedding (t-SNE)
 
-t-SNE (Maaten and Hinton, 2008) is a dimensionality reduction technique developed for mapping high dimensional objects. We generate the maps with [Scikit-learn](https://scikit-learn.org/stable/). We take topic models resulting from non-negative matrix factorization (NMF) and fit them to the tf-idf matrix. We then transform the fitted topic model into a series of coordinates to map with t-SNE. 
+t-SNE (Maaten and Hinton, 2008) is a dimensionality reduction technique developed for mapping high dimensional objects. We generate the maps with [Scikit-learn](https://scikit-learn.org/stable/). We take topic models resulting from non-negative matrix factorization (NMF) and fit them to the tf-idf matrix. We then transform the fitted topic model (document-topic matrix) into coordinates to map documents with t-SNE. 
 
 The key parameters that we control are *perplexity* (5-50), which defines the number of nearest neighbors, and *early_exaggeration* (default: 12.0), which determines the compactness of resulting clusters and the space between them. We choose a perplexity of 7 and early exaggeration of 5 for the t-SNE map shown below. The t-SNE [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-maps.ipynb) is available in this repository.
 
@@ -127,15 +125,17 @@ The key parameters that we control are *perplexity* (5-50), which defines the nu
 
 ### Uniform manifold approximation and projection (UMAP)
 
-We also experiment with UMAP (McInnes et al., 2018) on our data to compare the spatial layout and clustering of UMAP with t-SNE. We use [umap-learn](https://umap-learn.readthedocs.io/en/latest/) to generate the UMAP maps. It scales and preserves global data structure better than t-SNE, in which between-cluster similarities are not always preserved. The process for transforming the non-negative matrix factorization (NMF) and fitting it is nearly identical to that of t-SNE; however, UMAP can work directly with high-dimensional data. 
+We also experiment with UMAP (McInnes et al., 2018) on our data to compare the spatial layout and clustering of UMAP against t-SNE using [umap-learn](https://umap-learn.readthedocs.io/en/latest/). UMAP scales and preserves global data structure better than t-SNE, in which between-cluster similarities are not always preserved. The process for transforming the non-negative matrix factorization (NMF) and fitting it is nearly identical to that of t-SNE; however, UMAP can work directly with high-dimensional data. 
 
-The key parameters are *n_neighbors* (default=15), which defines the number of neighbors (and is similar to *perplexity* in t-SNE), *min_dist* (default=0.1), which controls how tightly the clusters are packed (and is similar to *early exaggeration* in t-SNE), and *metric* (cosine, euclidean...), which determines how distance is computed. We choose n_neighbors of 10 and min_dist of 0.1. Interactive prototypes of these plots created with [Bokeh](https://docs.bokeh.org/en/latest/index.html) are also available in a [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-maps.ipynb) in this repository.
+The key parameters are *n_neighbors* (default=15), which defines the number of neighbors (and is similar to *perplexity* in t-SNE), *min_dist* (default=0.1), which controls how tightly the clusters are packed (and is similar to *early exaggeration* in t-SNE), and *metric* (cosine, euclidean...), which determines how distance is computed. We choose 10 neighbors and a minimum distance of 0.1. 
 
 <img src="figures/NMF-UMAP-9-topic.png" alt="NMF-UMAP-9-topic" width="600"/>
 
+Interactive versions of the t-SNE and UMAP plots in [Bokeh](https://docs.bokeh.org/en/latest/index.html) are also available in this [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-maps.ipynb). The metadata for each document (dominant topic, title, authors, year, and type) show on hover. In each map, neighboring documents share similar topics. 
+
 ### Dendrogram
 
-To produce a tree, we select a dendrogram representation, to cluster topics hierarchically. We use [SciPy](https://www.scipy.org/) to generate a dendrogram of topics in the 70 topic model. We use a matrix of the 70 topics and their term weights as an input. From this, we determine a number of aggolmerative clusters for the topics (7). We then generate a linkage dendrogram using a ward method to minimize with euclidean distance between parameters. The dendrogram [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-trees.ipynb) is available in this repository.
+To produce a tree, we select a dendrogram representation, to cluster topics hierarchically. We use [SciPy](https://www.scipy.org/) to generate a dendrogram of topics in the 70 topic model. We use a matrix of the 70 topics and their term weights as an input. From this, we determine a number of aggolmerative clusters for the topics (7). We then generate a linkage dendrogram using a ward method to minimize with euclidean distance between parameters. The dendrogram [script](https://github.com/saralafia/Study-3-master/blob/master/ERI-trees.ipynb) is also available in this repository.
 
 <img src="figures/NMF-t-SNE-70-topic-dendrogram-labeled.png" alt="NMF-t-SNE-70-topic-dendrogram-labeled" width="600"/>
 
